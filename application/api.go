@@ -37,7 +37,7 @@ func (s *APIServer) Run(ctx context.Context) error {
 	log.Printf("Server started at port %s", s.addr)
 	err := server.ListenAndServe()
 	if err != nil {
-		return fmt.Errorf("Failed to start server: %w", err)
+		return fmt.Errorf("failed to start server: %w", err)
 	}
-	retutn nil
+	return nil
 }
