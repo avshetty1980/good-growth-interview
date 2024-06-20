@@ -1,19 +1,23 @@
 package application
 
 import (
-	"context"
 	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/avshetty1980/good-growth-interview/database"
+	"github.com/avshetty1980/good-growth-interview/handler"
 )
 
 type APIServer struct {
-	addr string
+	addr  string
+	store database.Store
 }
 
-func NewAPIServer(addr string) *APIServer {
+func NewAPIServer(addr string, store database.Store) *APIServer {
 	return &APIServer{
-		addr: addr,
+		addr:  addr,
+		store: store,
 	}
 }
 
@@ -26,8 +30,12 @@ func RequestLoggerMiddleware(next http.Handler) http.HandlerFunc {
 	}
 }
 
-func (s *APIServer) Run(ctx context.Context) error {
-	router := loadRoutes()
+func (s *APIServer) Run() error {
+	router := http.NewServeMux()
+
+	messageService := handler.NewMessageService(s.store)
+	messageService.RegisterRoutes(router)
+
 	fmt.Println("loadroutes here")
 	server := &http.Server{
 		Addr:    s.addr,

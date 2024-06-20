@@ -1,19 +1,85 @@
 package handler
 
 import (
+	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
+
+	"github.com/avshetty1980/good-growth-interview/database"
 )
 
 type Message struct {
-	// ID      string
-	// Content string
+	ID      string `json: "id"`
+	Content string `json: "content"`
 }
 
-func (m *Message) Create(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Created a message")
+type MessageService struct {
+	store database.Store
 }
 
-func (m *Message) GetByID(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Get message by ID")
+func NewMessageService(s database.Store) *MessageService {
+	return &MessageService{
+		store: s,
+	}
+}
+
+func (m *MessageService) RegisterRoutes(r *http.ServeMux) {
+	r.HandleFunc("GET /messages/{id}", m.handleGetByID)
+	r.HandleFunc("POST /messages", m.handleCreateMessage)
+}
+
+func (m *MessageService) handleCreateMessage(w http.ResponseWriter, r *http.Request) {
+
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+	defer r.Body.Close()
+
+	var message *Message
+	err = json.Unmarshal(body, &message)
+	if err != nil {
+		http.Error(w, "Unmarshalling of message failed", http.StatusInternalServerError)
+		return
+	}
+
+	if message.Content == "" {
+		http.Error(w, "Message string cannot be empty", http.StatusInternalServerError)
+		return
+	}
+
+	id, err := m.store.CreateMessage(message.Content)
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	response := Message{ID: id}
+	jsonResponse, err := json.Marshal(response)
+	if err != nil {
+		http.Error(w, "Unable to create response with message id", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Header().Add("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(jsonResponse)
+
+}
+
+func (m *MessageService) handleGetByID(w http.ResponseWriter, r *http.Request) {
+
+	id := r.PathValue("id")
+	message, err := m.store.GetMessage(id)
+	if err != nil {
+		http.Error(w, "Message not found", http.StatusNotFound)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "text/plain")
+	fmt.Fprintln(w, message)
+
 }
