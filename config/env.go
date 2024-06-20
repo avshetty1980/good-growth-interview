@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"os"
 )
 
@@ -19,9 +18,9 @@ var Envs = InitConfig()
 func InitConfig() Config {
 	return Config{
 		Port:       getEnv("PORT", ":8080"),
-		Username:   getEnv("MONGO_DB_USERNAME", ":8080"),
-		Password:   getEnv("MONGO_DB_PASSWORD", ":8080"),
-		DBURI:      fmt.Sprintf("mongodb://%s:%s@db:%s/", getEnv("DB_USER", "mongoadmin"), getEnv("DB_PASSWORD", "secret"), getEnv("DB_PORT", "27017")),
+		Username:   getEnv("MONGO_DB_USERNAME", "mongoadmin"),
+		Password:   getEnv("MONGO_DB_PASSWORD", "secret"),
+		DBURI:      getEnv("MONGO_DB_URI", "mongodb://mongoadmin:secret@db:27017/"),
 		DBName:     getEnv("DB_NAME", "goodgrowth"),
 		Collection: getEnv("Collection", "messages"),
 	}

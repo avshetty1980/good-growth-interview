@@ -36,7 +36,6 @@ func (s *APIServer) Run() error {
 	messageService := handler.NewMessageService(s.store)
 	messageService.RegisterRoutes(router)
 
-	fmt.Println("loadroutes here")
 	server := &http.Server{
 		Addr:    s.addr,
 		Handler: RequestLoggerMiddleware(router),

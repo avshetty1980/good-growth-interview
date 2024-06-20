@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
+
 	"io"
 	"net/http"
 
@@ -38,19 +39,21 @@ func (m *MessageService) handleCreateMessage(w http.ResponseWriter, r *http.Requ
 	}
 	defer r.Body.Close()
 
-	var message *Message
-	err = json.Unmarshal(body, &message)
-	if err != nil {
-		http.Error(w, "Unmarshalling of message failed", http.StatusInternalServerError)
-		return
-	}
+	// var message *Message
+	message := string(body)
+	// err = json.Unmarshal(body, &message)
+	// if err != nil {
+	// 	http.Error(w, "Unmarshalling of message failed", http.StatusInternalServerError)
+	// 	return
+	// }
+	defer r.Body.Close()
 
-	if message.Content == "" {
+	if message == "" {
 		http.Error(w, "Message string cannot be empty", http.StatusBadRequest)
 		return
 	}
 
-	id, err := m.store.CreateMessage(message.Content)
+	id, err := m.store.CreateMessage(message)
 	if err != nil {
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
@@ -65,7 +68,8 @@ func (m *MessageService) handleCreateMessage(w http.ResponseWriter, r *http.Requ
 
 	w.WriteHeader(http.StatusOK)
 	w.Header().Add("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(jsonResponse)
+	// json.NewEncoder(w).Encode(jsonResponse)
+	w.Write(jsonResponse)
 
 }
 

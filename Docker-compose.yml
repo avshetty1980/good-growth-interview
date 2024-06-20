@@ -1,29 +1,42 @@
-version: "3.9"
+version: "3.8"
 services:
+  api:
+    image: good-growth-api:1.0
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: on-failure
+    ports:
+      - 5000:5000
+    volumes:
+      - .:/build
+    depends_on:
+      - db
+    environment:
+      - MONGODB_URL=mongodb://mongoadmin:secret@db:27017/
   db:
-    image: mongo
-    container_name: test-mongo
+    image: mongo:latest
+    container_name: mongodb
     restart: always
     ports:
       - 27017:27017
     volumes:
-      - testmongo:/data/db
+      - mongo-data:/data/db
     environment:
+      - MONGO_INITDB_DATABASE=goodgrowth
       - MONGO_INITDB_ROOT_USERNAME=mongoadmin
       - MONGO_INITDB_ROOT_PASSWORD=secret
   db-client:
-    image: mongo-express
+    image: mongo-express:latest
     restart: always
     ports:
       - 8081:8081
     environment:
-      - ME_CONFIG_MONGODB_ADMINUSERNAME=mongoadmin
-      - ME_CONFIG_MONGODB_ADMINPASSWORD=secret
+      - ME_CONFIG_MONGODB_ADMIN_USERNAME=mongoadmin
+      - ME_CONFIG_MONGODB_ADMIN_PASSWORD=secret
       - ME_CONFIG_MONGODB_URL=mongodb://mongoadmin:secret@db:27017/
     depends_on:
       - db
-  web:
-      build: .
-      ports: 8080:8080
-         depends_on:
-           - mongodb
+
+volumes:
+  mongo-data:
