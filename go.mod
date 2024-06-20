@@ -2,12 +2,12 @@ module github.com/avshetty1980/good-growth-interview
 
 go 1.22.4
 
-require go.mongodb.org/mongo-driver v1.15.1
-
-require filippo.io/edwards25519 v1.1.0 // indirect
+require (
+	github.com/joho/godotenv v1.5.1
+	go.mongodb.org/mongo-driver v1.15.1
+)
 
 require (
-	github.com/go-sql-driver/mysql v1.8.1
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/klauspost/compress v1.13.6 // indirect
 	github.com/montanaflynn/stats v0.0.0-20171201202039-1bf9dbcd8cbe // indirect

@@ -21,7 +21,7 @@ func main() {
 	})
 	mongoStorage := database.NewMessageStore(clientOptions)
 
-	store := database.NewStore(mongoStorage.Client)
+	store := database.NewStore(mongoStorage.Client, config.Envs.DBName, config.Envs.Collection)
 
 	defer func() {
 		err := mongoStorage.Close()

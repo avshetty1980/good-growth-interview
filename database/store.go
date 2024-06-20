@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/avshetty1980/good-growth-interview/config"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -23,17 +22,21 @@ type Store interface {
 }
 
 type Storage struct {
-	client *mongo.Client
+	client   *mongo.Client
+	dbname   string
+	collname string
 }
 
-func NewStore(c *mongo.Client) *Storage {
+func NewStore(c *mongo.Client, dbn string, cname string) *Storage {
 	return &Storage{
-		client: c,
+		client:   c,
+		dbname:   dbn,
+		collname: cname,
 	}
 }
 
 func (s *Storage) CreateMessage(content string) (string, error) {
-	coll := s.client.Database(config.Envs.DBName).Collection(config.Envs.Collection)
+	coll := s.client.Database(s.dbname).Collection(s.collname)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -53,7 +56,7 @@ func (s *Storage) CreateMessage(content string) (string, error) {
 }
 
 func (s *Storage) GetMessage(id string) (string, error) {
-	coll := s.client.Database(config.Envs.DBName).Collection(config.Envs.Collection)
+	coll := s.client.Database(s.dbname).Collection(s.collname)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()

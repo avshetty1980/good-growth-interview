@@ -12,7 +12,7 @@ services:
     depends_on:
       - db
     environment:
-      - MONGODB_URL=mongodb://mongoadmin:secret@db:27017/
+      MONGO_URI: mongodb://db:27017/
   db:
     image: mongo:latest
     container_name: mongodb
@@ -22,18 +22,18 @@ services:
     volumes:
       - mongo-data:/data/db
     environment:
-      - MONGO_INITDB_DATABASE=goodgrowth
-      - MONGO_INITDB_ROOT_USERNAME=mongoadmin
-      - MONGO_INITDB_ROOT_PASSWORD=secret
+      - MONGO_INITDB_DATABASE=${DB_NAME}
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_DB_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_DB_PASSWORD}
   db-client:
     image: mongo-express:latest
     restart: always
     ports:
       - 8081:8081
     environment:
-      - ME_CONFIG_MONGODB_ADMIN_USERNAME=mongoadmin
-      - ME_CONFIG_MONGODB_ADMIN_PASSWORD=secret
-      - ME_CONFIG_MONGODB_URL=mongodb://mongoadmin:secret@db:27017/
+      - ME_CONFIG_MONGODB_ADMIN_USERNAME=${MONGO_DB_USERNAME}
+      - ME_CONFIG_MONGODB_ADMIN_PASSWORD=${MONGO_DB_PASSWORD}
+      - ME_CONFIG_MONGODB_URL=${MONGO_DB_URI}
     depends_on:
       - db
 

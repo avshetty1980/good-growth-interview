@@ -37,11 +37,6 @@ func NewMessageStore(opts *options.ClientOptions) *MessageStore {
 	}
 }
 
-// func (ms *MessageStore) Init() (*mongo.Collection, error) {
-
-// 	return ms.Client.Database(config.Envs.DBName).Collection(config.Envs.Collection), nil
-// }
-
 func (ms *MessageStore) Close() error {
 
 	return ms.Client.Disconnect(context.Background())
