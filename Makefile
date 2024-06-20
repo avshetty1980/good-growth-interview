@@ -1,10 +1,10 @@
 include .env
 
 run: build
-	@./bin/api
+	/bin/api
 
 build:
-	@go build -o ${BINARY} bin/api
+	go build -o bin/api ./
 
 test:
-	@go test -v ./...
+	go test -v ./...

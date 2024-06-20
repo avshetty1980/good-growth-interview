@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/avshetty1980/good-growth-interview/config"
@@ -12,7 +13,7 @@ import (
 )
 
 type Message struct {
-	ID      primitive.ObjectID `bson:"_id, omitempty"`
+	ID      primitive.ObjectID `bson:"_id,omitempty"`
 	Content string             `bson:"content"`
 }
 
@@ -71,5 +72,6 @@ func (s *Storage) GetMessage(id string) (string, error) {
 		}
 		return "", err
 	}
+	fmt.Printf("message recieved: %#v", message)
 	return message.Content, nil
 }

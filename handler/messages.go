@@ -10,8 +10,8 @@ import (
 )
 
 type Message struct {
-	ID      string `json: "id"`
-	Content string `json: "content"`
+	ID      string `json:"id,omitempty"`
+	Content string `json:"content"`
 }
 
 type MessageService struct {
@@ -46,7 +46,7 @@ func (m *MessageService) handleCreateMessage(w http.ResponseWriter, r *http.Requ
 	}
 
 	if message.Content == "" {
-		http.Error(w, "Message string cannot be empty", http.StatusInternalServerError)
+		http.Error(w, "Message string cannot be empty", http.StatusBadRequest)
 		return
 	}
 
@@ -72,6 +72,7 @@ func (m *MessageService) handleCreateMessage(w http.ResponseWriter, r *http.Requ
 func (m *MessageService) handleGetByID(w http.ResponseWriter, r *http.Request) {
 
 	id := r.PathValue("id")
+	fmt.Printf("id recieved: %#v", id)
 	message, err := m.store.GetMessage(id)
 	if err != nil {
 		http.Error(w, "Message not found", http.StatusNotFound)
@@ -79,7 +80,8 @@ func (m *MessageService) handleGetByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Content-Type", "text/plain")
-	fmt.Fprintln(w, message)
+	w.Header().Set("Content-Type", "application/json")
+	fmt.Printf("message recieved: %#v", message)
+	fmt.Println(w, message)
 
 }

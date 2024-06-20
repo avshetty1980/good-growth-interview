@@ -23,12 +23,6 @@ func main() {
 
 	store := database.NewStore(mongoStorage.Client)
 
-	// coll, err := mongoStorage.Init()
-
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
 	defer func() {
 		err := mongoStorage.Close()
 		if err != nil {
