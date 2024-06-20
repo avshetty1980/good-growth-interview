@@ -1,23 +1,21 @@
 # good-growth-interview
 
-1. build app usng dockerfile with:
+This web service provides a simple interface for users to store and retrieve plain text messages. Users can send a message to the service, which returns a unique ID for that message. This ID can then be used to retrieve the message. The service is built in Go and uses MongoDB, a high-performance database, for storing messages. The service is containerized using Docker, making it easy to deploy and scale in various environments.
 
-```
-docker build -t good-growth-api:1.0 .
-```
+1. build app binary with:
 
-2. run in docker image
-
-```
-docker run -d -p 5000:5000 -e "mongodb://mongoadmin:secret@db:27017/" good-growth-api:1.0
+```bash
+make build
 ```
 
-3. to test running image
+2. to run the binary in docker image:
 
-```
-curl -i localhost:5000/messages
+```bash
+make up
 ```
 
-```
-docker run --name messagerepo -p 27017:27017 -d mongo
+3. to shutdown and delete the containers
+
+```bash
+make down
 ```

@@ -10,16 +10,15 @@ import (
 
 func TestNewMessageServiceHandlers(t *testing.T) {
 
-	payload := Message{
-		Content: "",
-	}
-
-	marshalled, _ := json.Marshal(payload)
-
 	messageStore := &mockMessageStore{}
 	handler := NewMessageService(messageStore)
 
-	t.Run("createMessage should fail if the message payload is invalid", func(t *testing.T) {
+	t.Run("createMessage should send bad request if the message payload is invalid", func(t *testing.T) {
+		payload := Message{
+			Content: "",
+		}
+
+		marshalled, _ := json.Marshal(payload)
 
 		req, err := http.NewRequest(http.MethodPost, "/messages", bytes.NewBuffer(marshalled))
 		if err != nil {

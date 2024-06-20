@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 
 	"io"
 	"net/http"
@@ -27,7 +26,7 @@ func NewMessageService(s database.Store) *MessageService {
 
 func (m *MessageService) RegisterRoutes(r *http.ServeMux) {
 	r.HandleFunc("GET /messages/{id}", m.handleGetByID)
-	r.HandleFunc("POST /messages", m.handleCreateMessage)
+	r.HandleFunc("POST /messages/", m.handleCreateMessage)
 }
 
 func (m *MessageService) handleCreateMessage(w http.ResponseWriter, r *http.Request) {
@@ -39,13 +38,8 @@ func (m *MessageService) handleCreateMessage(w http.ResponseWriter, r *http.Requ
 	}
 	defer r.Body.Close()
 
-	// var message *Message
 	message := string(body)
-	// err = json.Unmarshal(body, &message)
-	// if err != nil {
-	// 	http.Error(w, "Unmarshalling of message failed", http.StatusInternalServerError)
-	// 	return
-	// }
+
 	defer r.Body.Close()
 
 	if message == "" {
@@ -60,7 +54,7 @@ func (m *MessageService) handleCreateMessage(w http.ResponseWriter, r *http.Requ
 	}
 
 	response := Message{ID: id}
-	jsonResponse, err := json.Marshal(response)
+	jsonResponse, err := json.Marshal(response.ID)
 	if err != nil {
 		http.Error(w, "Unable to create response with message id", http.StatusInternalServerError)
 		return
@@ -68,7 +62,6 @@ func (m *MessageService) handleCreateMessage(w http.ResponseWriter, r *http.Requ
 
 	w.WriteHeader(http.StatusOK)
 	w.Header().Add("Content-Type", "application/json")
-	// json.NewEncoder(w).Encode(jsonResponse)
 	w.Write(jsonResponse)
 
 }
@@ -76,7 +69,7 @@ func (m *MessageService) handleCreateMessage(w http.ResponseWriter, r *http.Requ
 func (m *MessageService) handleGetByID(w http.ResponseWriter, r *http.Request) {
 
 	id := r.PathValue("id")
-	fmt.Printf("id recieved: %#v", id)
+
 	message, err := m.store.GetMessage(id)
 	if err != nil {
 		http.Error(w, "Message not found", http.StatusNotFound)
@@ -84,8 +77,7 @@ func (m *MessageService) handleGetByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Content-Type", "application/json")
-	fmt.Printf("message recieved: %#v", message)
-	fmt.Println(w, message)
+	w.Header().Add("Content-Type", "application/json")
+	w.Write([]byte(message))
 
 }
